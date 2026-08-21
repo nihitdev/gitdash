@@ -42,9 +42,9 @@ jobs:
         if: runner.os != 'Windows'
         run: ./gradlew clean build installDist --no-daemon
 
-      - name: Build and test on Windows
+      - name: Build Windows distribution
         if: runner.os == 'Windows'
-        run: .\gradlew.bat clean build installDist --no-daemon
+        run: .\gradlew.bat clean assemble installDist --no-daemon
 
       - name: Verify Linux launcher
         if: runner.os != 'Windows'
