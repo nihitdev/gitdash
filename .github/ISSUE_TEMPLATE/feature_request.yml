@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest a focused GitDash improvement
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What developer workflow is difficult today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include example commands and output where useful.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety considerations
+      options:
+        - label: I have described any network access or repository mutations this feature would perform.
+          required: true

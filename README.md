@@ -1,6 +1,6 @@
 # GitDash
 
-![GitDash version](https://img.shields.io/badge/version-0.1.0-2563eb?style=flat-square)
+![GitDash version](https://img.shields.io/badge/version-0.2.0-2563eb?style=flat-square)
 ![Java](https://img.shields.io/badge/Java-26-e76f00?style=flat-square&logo=openjdk&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-9.7.1-02303a?style=flat-square&logo=gradle&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Linux-fcc624?style=flat-square&logo=linux&logoColor=black)
@@ -23,7 +23,7 @@ website     develop             dirty           2       0         2h ago
 
 ## Requirements and installation
 
-- Linux or another Unix-like environment
+- Linux, macOS, or another Unix-like environment
 - Windows 10/11 with PowerShell 5.1 or newer
 - Eclipse Temurin/Adoptium JDK 26 (another conforming Java 26 JDK should also work)
 - Git available on `PATH`
@@ -85,15 +85,19 @@ GitDash recognizes both `.git` directories and worktree-style `.git` files. It d
 | `dirty`, `clean`, `ahead`, `behind`, `conflicts` | Focused status views |
 | `stale [--days N]` | Show repositories with old last commits |
 | `repos [--search TEXT]` | Search the registry |
+| `repos rename REPO NAME` | Rename a registry entry without moving it |
+| `repos export FILE`, `repos import FILE` | Back up, merge, or replace the registry |
 | `remove REPO` | Unregister one repository without touching its files |
 | `prune [--dry-run]` | Find or unregister repository paths that no longer exist |
 | `show REPO` | Detailed working-tree, remote, and commit information |
 | `doctor` | Diagnose working-tree and synchronization issues |
 | `fetch REPO`, `fetch --all`, `fetch --group NAME` | Concurrently update remote metadata |
 | `config`, `config alias NAME PATH` | Inspect configuration or set an alias |
+| `config unalias NAME` | Remove an alias |
 | `cache clear` | Clear the cache directory (status itself is never cached) |
-| `completion bash\|zsh\|fish` | Generate shell completion |
+| `completion bash\|zsh\|fish\|powershell` | Generate contextual shell completion |
 | `benchmark` | Compare temporary-repository sequential/concurrent inspection |
+| `update [--prefix PATH]` | Upgrade from the latest verified release |
 
 Global options include `--help`, `--version`, `--debug`, and `--no-color`. GitDash currently emits no ANSI styling when output is redirected; `NO_COLOR` is therefore naturally respected.
 
@@ -111,6 +115,54 @@ gitdash status --stale --stale-days 90
 ```
 
 Additional filters include `--no-remote` and `--invalid`. `repos --missing` lists missing registered paths, while `repos --json` provides a machine-readable registry view.
+
+### Registry backups and aliases
+
+```bash
+gitdash repos rename old-name new-name
+gitdash repos export ~/gitdash-repositories.json
+gitdash repos import ~/gitdash-repositories.json
+gitdash repos import ~/gitdash-repositories.json --replace
+gitdash config unalias zari
+```
+
+Import merges by normalized path unless `--replace` is supplied. Rename changes only GitDash's stored display name; it never moves a repository directory.
+
+### Updates and uninstalling
+
+`gitdash update` downloads the latest platform installer and reuses the inferred installation prefix. Override it with `--prefix`. Release installers verify the archive against `SHA256SUMS` before extraction.
+
+```bash
+gitdash update
+PREFIX="$HOME/.local" sh install.sh uninstall
+```
+
+On Windows:
+
+```powershell
+.\install.ps1 -Uninstall
+```
+
+### Shell completion
+
+Generated completions include commands, status options, nested registry/config actions, shells, and live registered repository names.
+
+```bash
+# bash
+source <(gitdash completion bash)
+
+# zsh
+gitdash completion zsh > "${fpath[1]}/_gitdash"
+
+# fish
+gitdash completion fish > ~/.config/fish/completions/gitdash.fish
+```
+
+PowerShell profile setup:
+
+```powershell
+gitdash completion powershell | Add-Content $PROFILE
+```
 
 Sort with `--sort name|path|status|branch|commit|ahead|behind`; add `--reverse` to reverse the complete deterministic order. The path is always a tie-breaker.
 
@@ -188,7 +240,7 @@ Repository inspection uses Git porcelain v2 and NUL-delimited/log machine format
 
 ## Roadmap
 
-Potential later work includes richer terminal-width adaptation/colors, dynamic repository completion, registry removal/rename commands, and benchmark-driven metadata caching. Working-tree status will not be cached unless freshness can be made explicit and correct. Mutating Git operations such as pull, merge, rebase, checkout, reset, clean, commit, and push are intentionally outside v0.1.
+Potential later work includes richer terminal-width adaptation/colors, native package-manager publication, and benchmark-driven metadata caching. Working-tree status will not be cached unless freshness can be made explicit and correct. Mutating Git operations such as pull, merge, rebase, checkout, reset, clean, commit, and push remain intentionally outside the project.
 
 ## License
 

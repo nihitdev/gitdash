@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -38,19 +38,35 @@ jobs:
       - name: Verify wrapper
         uses: gradle/actions/wrapper-validation@v6
 
-      - name: Build and test on Linux
+      - name: Build and test on Unix
         if: runner.os != 'Windows'
         run: ./gradlew clean build installDist --no-daemon
 
       - name: Build Windows distribution
         if: runner.os == 'Windows'
-        run: .\gradlew.bat clean assemble installDist --no-daemon
+        run: .\gradlew.bat clean test --tests dev.nihit.gitdash.git.WindowsGitIntegrationTest assemble installDist --no-daemon
 
-      - name: Verify Linux launcher
+      - name: Verify Unix launcher
         if: runner.os != 'Windows'
         run: |
           build/install/gitdash/bin/gitdash --version
           build/install/gitdash/bin/gitdash --help >/dev/null
+
+      - name: Verify Bash completion
+        if: runner.os == 'Linux'
+        run: build/install/gitdash/bin/gitdash completion bash | bash -n
+
+      - name: Verify zsh completion
+        if: runner.os == 'macOS'
+        run: build/install/gitdash/bin/gitdash completion zsh | zsh -n
+
+      - name: Test Unix installer lifecycle
+        if: runner.os != 'Windows'
+        run: |
+          PREFIX="$RUNNER_TEMP/gitdash-install" ./install.sh install
+          "$RUNNER_TEMP/gitdash-install/bin/gitdash" --version
+          PREFIX="$RUNNER_TEMP/gitdash-install" ./install.sh uninstall
+          test ! -e "$RUNNER_TEMP/gitdash-install/bin/gitdash"
 
       - name: Verify Windows launcher and installer syntax
         if: runner.os == 'Windows'
@@ -63,13 +79,18 @@ jobs:
             (Resolve-Path .\install.ps1), [ref]$null, [ref]$errors
           )
           if ($errors.Count -gt 0) { throw ($errors | Out-String) }
+          .\build\install\gitdash\bin\gitdash.bat completion powershell | Set-Content completion.ps1
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path .\completion.ps1), [ref]$null, [ref]$errors
+          )
+          if ($errors.Count -gt 0) { throw ($errors | Out-String) }
 
       - name: Test public Windows installer
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           $prefix = Join-Path $env:RUNNER_TEMP "gitdash-installer-test"
-          .\install.ps1 -Prefix $prefix -NoPath
+          .\install.ps1 -Prefix $prefix -Version 0.1.0 -NoPath
           & (Join-Path $prefix "bin\gitdash.cmd") --version
 
       - name: Upload distributions
