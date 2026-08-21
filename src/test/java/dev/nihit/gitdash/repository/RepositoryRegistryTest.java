@@ -1,0 +1,8 @@
+package dev.nihit.gitdash.repository;
+import dev.nihit.gitdash.model.Repository;
+import org.junit.jupiter.api.Test;import org.junit.jupiter.api.io.TempDir;
+import java.nio.file.Path;import java.time.Instant;import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+class RepositoryRegistryTest {@TempDir Path temp;@Test void persistsAndDeduplicatesByPath()throws Exception{var registry=new RepositoryRegistry(temp);var p=temp.resolve("repo");registry.merge(List.of(new Repository("a",p,Instant.EPOCH)));registry.merge(List.of(new Repository("renamed",p,Instant.EPOCH.plusSeconds(1))));assertThat(registry.load()).singleElement().satisfies(r->{assertThat(r.name()).isEqualTo("renamed");assertThat(r.path()).isEqualTo(p.toAbsolutePath());});}
+@Test void removesOnlySelectedEntry()throws Exception{var registry=new RepositoryRegistry(temp);var a=temp.resolve("a");var b=temp.resolve("b");registry.merge(List.of(new Repository("a",a,Instant.EPOCH),new Repository("b",b,Instant.EPOCH)));assertThat(registry.remove(a)).isTrue();assertThat(registry.load()).extracting(Repository::name).containsExactly("b");assertThat(registry.remove(a)).isFalse();}
+@Test void prunesMissingPathsButPreservesExistingDirectories()throws Exception{var registry=new RepositoryRegistry(temp);var existing=java.nio.file.Files.createDirectory(temp.resolve("existing"));var missing=temp.resolve("missing");registry.merge(List.of(new Repository("existing",existing,Instant.EPOCH),new Repository("missing",missing,Instant.EPOCH)));assertThat(registry.removeMissing()).extracting(Repository::name).containsExactly("missing");assertThat(registry.load()).extracting(Repository::name).containsExactly("existing");}}
