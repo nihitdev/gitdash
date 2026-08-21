@@ -2,7 +2,7 @@
 
 ![GitDash version](https://img.shields.io/badge/version-0.1.0-2563eb?style=flat-square)
 ![Java](https://img.shields.io/badge/Java-26-e76f00?style=flat-square&logo=openjdk&logoColor=white)
-![Gradle](https://img.shields.io/badge/Gradle-9.0-02303a?style=flat-square&logo=gradle&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-9.7.1-02303a?style=flat-square&logo=gradle&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Linux-fcc624?style=flat-square&logo=linux&logoColor=black)
 ![Safety](https://img.shields.io/badge/default-read--only-16a34a?style=flat-square)
 [![CI](https://github.com/nihitdev/gitdash/actions/workflows/ci.yml/badge.svg)](https://github.com/nihitdev/gitdash/actions/workflows/ci.yml)
