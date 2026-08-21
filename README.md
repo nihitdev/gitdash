@@ -1,6 +1,6 @@
 # GitDash
 
-![GitDash version](https://img.shields.io/badge/version-0.2.0-2563eb?style=flat-square)
+![GitDash version](https://img.shields.io/badge/version-0.2.1-2563eb?style=flat-square)
 ![Java](https://img.shields.io/badge/Java-26-e76f00?style=flat-square&logo=openjdk&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Gradle-9.7.1-02303a?style=flat-square&logo=gradle&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Linux-fcc624?style=flat-square&logo=linux&logoColor=black)

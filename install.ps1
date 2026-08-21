@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string] $Prefix = (Join-Path $env:LOCALAPPDATA "Programs\GitDash"),
-    [string] $Version = "0.2.0",
+    [string] $Version = "0.2.1",
     [switch] $NoPath,
     [switch] $Uninstall,
     [long] $WaitForProcessId = 0

@@ -2,7 +2,7 @@
 set -eu
 
 PREFIX=${PREFIX:-/usr/local}
-VERSION=${GITDASH_VERSION:-0.2.0}
+VERSION=${GITDASH_VERSION:-0.2.1}
 ACTION=${1:-install}
 SOURCE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 DIST=${GITDASH_DIST:-}

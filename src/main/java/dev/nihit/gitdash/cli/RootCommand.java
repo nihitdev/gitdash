@@ -41,7 +41,7 @@ public final class RootCommand implements Runnable {
     @Option(names="--no-color", description="Disable colored output") boolean noColor;
     public RootCommand(AppContext context) { this.context = context; }
     @Override public void run() { CommandLine.usage(this, System.out); }
-    static final class Version implements CommandLine.IVersionProvider { public String[] getVersion() { return new String[]{"GitDash 0.2.0", "Java " + Runtime.version().feature()}; } }
+    static final class Version implements CommandLine.IVersionProvider { public String[] getVersion() { return new String[]{"GitDash 0.2.1", "Java " + Runtime.version().feature()}; } }
 
     @Command(name="scan", description="Discover and register Git repositories.")
     static final class Scan implements Callable<Integer> {

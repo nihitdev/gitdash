@@ -3,13 +3,10 @@ package dev.nihit.gitdash.service;
 import dev.nihit.gitdash.GitDash;
 
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public final class UpdateService {
@@ -19,11 +16,7 @@ public final class UpdateService {
         Path directory = Files.createTempDirectory("gitdash-update-");
         Path installer = directory.resolve(windows ? "install.ps1" : "install.sh");
         URI uri = URI.create("https://github.com/nihitdev/gitdash/releases/latest/download/" + installer.getFileName());
-        try (var client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).connectTimeout(Duration.ofSeconds(15)).build()) {
-            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(30)).header("User-Agent", "GitDash/0.2.0").build();
-            var response = client.send(request, HttpResponse.BodyHandlers.ofFile(installer));
-            if (response.statusCode() != 200) throw new IllegalStateException("Cannot download updater: HTTP " + response.statusCode());
-        }
+        download(uri, installer, windows);
         var command = new ArrayList<String>();
         if (windows) { command.add("powershell.exe"); command.add("-NoProfile"); command.add("-ExecutionPolicy"); command.add("Bypass"); command.add("-File"); command.add(installer.toString()); command.add("-Prefix"); command.add(prefix.toString()); command.add("-WaitForProcessId"); command.add(Long.toString(ProcessHandle.current().pid())); }
         else { command.add("sh"); command.add(installer.toString()); }
@@ -35,6 +28,15 @@ public final class UpdateService {
         try { Files.deleteIfExists(installer); Files.deleteIfExists(directory); } catch (java.io.IOException ignored) { }
         return exit;
     }
+    private static void download(URI uri,Path target,boolean windows)throws Exception{
+        List<String> command;
+        if(windows)command=List.of("powershell.exe","-NoProfile","-Command","Invoke-WebRequest -UseBasicParsing -Uri '"+uri+"' -OutFile '"+target.toString().replace("'","''")+"'");
+        else if(available("curl"))command=List.of("curl","-fsSL","--retry","3","--connect-timeout","20",uri.toString(),"-o",target.toString());
+        else if(available("wget"))command=List.of("wget","--tries=3","--timeout=20","-O",target.toString(),uri.toString());
+        else throw new IllegalStateException("curl or wget is required to update GitDash");
+        int exit=new ProcessBuilder(command).inheritIO().start().waitFor();if(exit!=0)throw new IllegalStateException("Cannot download the GitDash updater");
+    }
+    private static boolean available(String executable){try{return new ProcessBuilder(executable,"--version").redirectErrorStream(true).start().waitFor()==0;}catch(Exception ignored){return false;}}
     static Path inferPrefix(boolean windows) {
         try {
             Path location = Path.of(GitDash.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath();
