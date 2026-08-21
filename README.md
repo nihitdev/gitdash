@@ -24,6 +24,7 @@ website     develop             dirty           2       0         2h ago
 ## Requirements and installation
 
 - Linux or another Unix-like environment
+- Windows 10/11 with PowerShell 5.1 or newer
 - Eclipse Temurin/Adoptium JDK 26 (another conforming Java 26 JDK should also work)
 - Git available on `PATH`
 
@@ -49,6 +50,18 @@ PREFIX="$HOME/.local" sh install.sh
 ```
 
 Ensure the selected prefix's `bin` directory is on `PATH`.
+
+### Windows
+
+From PowerShell, install the latest release for the current user:
+
+```powershell
+Invoke-WebRequest https://github.com/nihitdev/gitdash/releases/latest/download/install.ps1 -OutFile install.ps1
+.\install.ps1
+gitdash --version
+```
+
+The default location is `%LOCALAPPDATA%\Programs\GitDash`. The installer adds its `bin` directory to the user PATH; open a new terminal afterward. Use `-Prefix C:\Tools\GitDash` to select another location or `-NoPath` to leave PATH unchanged. Administrator privileges are not required for the default location.
 
 ## First use
 

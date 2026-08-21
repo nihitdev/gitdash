@@ -42,6 +42,7 @@ jobs:
           build/distributions/gitdash-*.tar
           build/distributions/gitdash-*.zip
           install.sh
+          install.ps1
           LICENSE
           --verify-tag
           --title "GitDash ${GITHUB_REF_NAME#v}"
