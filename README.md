@@ -5,6 +5,9 @@
 ![Gradle](https://img.shields.io/badge/Gradle-9.0-02303a?style=flat-square&logo=gradle&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-Linux-fcc624?style=flat-square&logo=linux&logoColor=black)
 ![Safety](https://img.shields.io/badge/default-read--only-16a34a?style=flat-square)
+[![CI](https://github.com/nihitdev/gitdash/actions/workflows/ci.yml/badge.svg)](https://github.com/nihitdev/gitdash/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/nihitdev/gitdash?style=flat-square)](https://github.com/nihitdev/gitdash/releases/latest)
+[![License](https://img.shields.io/github/license/nihitdev/gitdash?style=flat-square)](LICENSE)
 
 GitDash is a fast, read-mostly terminal dashboard for developers who maintain many local Git repositories. It discovers repositories once, stores a registry in the appropriate XDG state directory, then inspects every registered working tree concurrently using the installed `git` executable.
 
@@ -36,6 +39,13 @@ For a normal `gitdash` command, run `./install.sh`. The default prefix is `/usr/
 
 ```bash
 PREFIX="$HOME/.local" ./install.sh
+```
+
+Install the latest release without cloning the repository:
+
+```bash
+curl -fsSLO https://github.com/nihitdev/gitdash/releases/latest/download/install.sh
+PREFIX="$HOME/.local" sh install.sh
 ```
 
 Ensure the selected prefix's `bin` directory is on `PATH`.
@@ -166,3 +176,7 @@ Repository inspection uses Git porcelain v2 and NUL-delimited/log machine format
 ## Roadmap
 
 Potential later work includes richer terminal-width adaptation/colors, dynamic repository completion, registry removal/rename commands, and benchmark-driven metadata caching. Working-tree status will not be cached unless freshness can be made explicit and correct. Mutating Git operations such as pull, merge, rebase, checkout, reset, clean, commit, and push are intentionally outside v0.1.
+
+## License
+
+GitDash is licensed under the [Apache License 2.0](LICENSE).

@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Java 26 build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Temurin 26
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "26"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Verify wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Build and test
+        run: ./gradlew clean build installDist --no-daemon
+
+      - name: Verify installed launcher
+        run: |
+          build/install/gitdash/bin/gitdash --version
+          build/install/gitdash/bin/gitdash --help >/dev/null
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitdash-distributions
+          path: build/distributions/gitdash-*
+          if-no-files-found: error
+          retention-days: 14
